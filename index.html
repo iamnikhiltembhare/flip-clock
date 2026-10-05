@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Flip Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #fff;
+            overflow: hidden;
+            transition: background 2s ease;
+        }
+
+        .main-container {
+            transform: scale(2);
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--glow1, rgba(138, 43, 226, 0.15)) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+            filter: blur(60px);
+            transition: background 2s ease;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--glow2, rgba(30, 144, 255, 0.15)) 0%, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            border-radius: 50%;
+            filter: blur(60px);
+            transition: background 2s ease;
+        }
+
+        .clock-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 60px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .time-separator {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100px;
+            height: 120px;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .number::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            z-index: 1;
+        }
+
+        .number::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .period-container {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            padding-top: 10px;
+            margin-left: 15px;
+        }
+
+        .period {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .date-container {
+            z-index: 1;
+            position: relative;
+            text-align: center;
+        }
+
+        .date {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        .label-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .time-label {
+            width: 100px;
+            text-align: center;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+        }
+
+        .flip {
+            animation: flipAnimation 0.6s ease-in-out;
+        }
+
+        @keyframes flipAnimation {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(-90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        @media (max-width: 1400px) {
+            .main-container {
+                transform: scale(1.5);
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .main-container {
+                transform: scale(1.2);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                transform: scale(0.8);
+            }
+            .flip-card {
+                width: 70px;
+                height: 90px;
+            }
+            .number {
+                font-size: 52px;
+            }
+            .date {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                transform: scale(0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="clock-container">
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="hours1">0</div>
+            </div>
+        </div>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="hours2">0</div>
+            </div>
+        </div>
+        
+        <div class="time-separator">
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="minutes1">0</div>
+            </div>
+        </div>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="minutes2">0</div>
+            </div>
+        </div>
+        
+        <div class="time-separator">
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="seconds1">0</div>
+            </div>
+        </div>
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="number" id="seconds2">0</div>
+            </div>
+        </div>
+        
+        <div class="period-container">
+            <div class="period" id="period">PM</div>
+        </div>
+    </div>
+    
+    <div class="label-container">
+        <div class="time-label">Hours</div>
+        <div class="time-label" style="opacity: 0; width: 8px;"></div>
+        <div class="time-label">Minutes</div>
+        <div class="time-label" style="opacity: 0; width: 8px;"></div>
+        <div class="time-label">Seconds</div>
+    </div>
+    
+    <div class="date-container">
+        <div class="date" id="date">Friday, October 10</div>
+    </div>
+    </div>
+
+    <script>
+        let prevValues = {
+            h1: -1, h2: -1, m1: -1, m2: -1, s1: -1, s2: -1
+        };
+        let previousGradientIndex = -1;
+
+        const gradients = [
+            { bg: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)', glow1: 'rgba(138, 43, 226, 0.15)', glow2: 'rgba(30, 144, 255, 0.15)' },
+            { bg: 'linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%)', glow1: 'rgba(253, 187, 45, 0.15)', glow2: 'rgba(178, 31, 31, 0.15)' },
+            { bg: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)', glow1: 'rgba(113, 178, 128, 0.15)', glow2: 'rgba(19, 78, 94, 0.15)' },
+            { bg: 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)', glow1: 'rgba(52, 152, 219, 0.15)', glow2: 'rgba(44, 62, 80, 0.15)' },
+            { bg: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)', glow1: 'rgba(42, 82, 152, 0.15)', glow2: 'rgba(30, 60, 114, 0.15)' },
+            { bg: 'linear-gradient(135deg, #667db6 0%, #0082c8 50%, #0082c8 100%)', glow1: 'rgba(0, 130, 200, 0.15)', glow2: 'rgba(102, 125, 182, 0.15)' },
+            { bg: 'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)', glow1: 'rgba(248, 87, 166, 0.15)', glow2: 'rgba(255, 88, 88, 0.15)' },
+            { bg: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', glow1: 'rgba(168, 237, 234, 0.15)', glow2: 'rgba(254, 214, 227, 0.15)' },
+            { bg: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)', glow1: 'rgba(255, 154, 158, 0.15)', glow2: 'rgba(254, 207, 239, 0.15)' },
+            { bg: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', glow1: 'rgba(255, 236, 210, 0.15)', glow2: 'rgba(252, 182, 159, 0.15)' },
+            { bg: 'linear-gradient(135deg, #08aeea 0%, #2af598 100%)', glow1: 'rgba(8, 174, 234, 0.15)', glow2: 'rgba(42, 245, 152, 0.15)' },
+            { bg: 'linear-gradient(135deg, #eea2a2 0%, #bbc1bf 50%, #57c6e1 100%)', glow1: 'rgba(87, 198, 225, 0.15)', glow2: 'rgba(238, 162, 162, 0.15)' }
+        ];
+
+        function updateBackground(hour) {
+            const index = hour % gradients.length;
+            if (index === previousGradientIndex) {
+                return;
+            }
+
+            const gradient = gradients[index];
+            document.body.style.background = gradient.bg;
+            document.body.style.setProperty('--glow1', gradient.glow1);
+            document.body.style.setProperty('--glow2', gradient.glow2);
+            previousGradientIndex = index;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            updateBackground(hours);
+            
+            const period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            
+            const h1 = Math.floor(hours / 10);
+            const h2 = hours % 10;
+            const m1 = Math.floor(minutes / 10);
+            const m2 = minutes % 10;
+            const s1 = Math.floor(seconds / 10);
+            const s2 = seconds % 10;
+            
+            updateDigit('hours1', h1, 'h1');
+            updateDigit('hours2', h2, 'h2');
+            updateDigit('minutes1', m1, 'm1');
+            updateDigit('minutes2', m2, 'm2');
+            updateDigit('seconds1', s1, 's1');
+            updateDigit('seconds2', s2, 's2');
+            
+            document.getElementById('period').textContent = period;
+            
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const date = now.getDate();
+            
+            document.getElementById('date').textContent = `${dayName}, ${monthName} ${date}`;
+        }
+        
+        function updateDigit(id, value, key) {
+            const element = document.getElementById(id);
+            if (prevValues[key] !== value) {
+                element.parentElement.classList.add('flip');
+                setTimeout(() => {
+                    element.textContent = value;
+                }, 300);
+                setTimeout(() => {
+                    element.parentElement.classList.remove('flip');
+                }, 600);
+                prevValues[key] = value;
+            }
+        }
+        
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
